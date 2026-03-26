@@ -1,0 +1,79 @@
+﻿<Window x:Class="OrientationVisual.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:hx="http://helix-toolkit.org/wpf"
+        Title="Satellite Orientation" Height="600" Width="1000">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="300"/>
+        </Grid.ColumnDefinitions>
+
+        <hx:HelixViewport3D x:Name="Viewport" Grid.Column="0" ZoomExtentsWhenLoaded="True">
+            <hx:SunLight/>
+            <hx:GridLinesVisual3D Width="100" Length="100" MinorDistance="1" MajorDistance="5"/>
+            <hx:CoordinateSystemVisual3D/>
+
+                <hx:ArrowVisual3D Point1="0,0,0" Point2="0,5,0" Diameter="0.15" Fill="Green" />
+                <hx:TextVisual3D Text="VBAR (+Y)" Position="0,5.5,0" Height="0.4"/>
+
+                <hx:ArrowVisual3D Point1="0,0,0" Point2="0,0,5" Diameter="0.15" Fill="Blue" />
+                <hx:TextVisual3D Text="NADIR (+Z)" Position="0,0,5.5"  Height="0.4"/>
+
+                <hx:ArrowVisual3D Point1="0,0,0" Point2="5,0,0" Diameter="0.15" Fill="Red" />
+                <hx:TextVisual3D Text="RIGHT (+X)" Position="5.5,0,0" Height="0.4"/>
+        
+
+            <ModelVisual3D x:Name="SatelliteContainer">
+                <ModelVisual3D.Transform>
+                    <RotateTransform3D Rotation="{Binding SatelliteRotation}"/>
+                </ModelVisual3D.Transform>
+            </ModelVisual3D>
+        </hx:HelixViewport3D>
+
+        <StackPanel Grid.Column="1" Background="#F5F5F5">
+            <TextBlock Text="Углы Эйлера (3-2-1 ZYX)" FontSize="14" FontWeight="Bold" Margin="0,0,0,10"/>
+
+            <TextBlock Text="Roll (Φ) - Ось X" Margin="0,5,0,0"/>
+            <Slider Value="{Binding Roll}" Minimum="-180" Maximum="180" TickFrequency="1" IsSnapToTickEnabled="False"/>
+            <TextBox Text="{Binding Roll, StringFormat=F5, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,10"/>
+
+            <TextBlock Text="Pitch (θ) - Ось Y"/>
+            <Slider Value="{Binding Pitch}" Minimum="-90" Maximum="90" TickFrequency="1"/>
+            <TextBox Text="{Binding Pitch, StringFormat=F5, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,10"/>
+
+            <TextBlock Text="Yaw (ψ) - Ось Z"/>
+            <Slider Value="{Binding Yaw}" Minimum="-180" Maximum="180" TickFrequency="1"/>
+            <TextBox Text="{Binding Yaw, StringFormat=F5, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,15"/>
+
+            <Separator Height="2" Margin="0,0,0,15"/>
+
+            <TextBlock Text="Кватернион (W, X, Y, Z)" FontSize="14" FontWeight="Bold" Margin="0,0,0,10"/>
+            <UniformGrid Columns="2" Rows="2">
+                <StackPanel Margin="2">
+                    <TextBlock Text="Qw" FontSize="10"/>
+                    <TextBox Text="{Binding QW, UpdateSourceTrigger=LostFocus}"/>
+                </StackPanel>
+                <StackPanel Margin="2">
+                    <TextBlock Text="Qx" FontSize="10"/>
+                    <TextBox Text="{Binding QX, UpdateSourceTrigger=LostFocus}"/>
+                </StackPanel>
+                <StackPanel Margin="2">
+                    <TextBlock Text="Qy" FontSize="10"/>
+                    <TextBox Text="{Binding QY, UpdateSourceTrigger=LostFocus}"/>
+                </StackPanel>
+                <StackPanel Margin="2">
+                    <TextBlock Text="Qz" FontSize="10"/>
+                    <TextBox Text="{Binding QZ, UpdateSourceTrigger=LostFocus}"/>
+                </StackPanel>
+            </UniformGrid>
+
+            <Button Content="Применить Кватернион" 
+            Command="{Binding ApplyQuaternionCommand}" 
+            Margin="0,15,0,5" Height="30" Cursor="Hand"/>
+
+            <TextBlock Text="{Binding Magnitude, StringFormat='Модуль (Norm): {0:F6}'}" 
+               HorizontalAlignment="Center" Foreground="#666666"/>
+        </StackPanel>
+    </Grid>
+</Window>
