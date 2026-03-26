@@ -9,8 +9,17 @@
             <ColumnDefinition Width="300"/>
         </Grid.ColumnDefinitions>
 
-        <hx:HelixViewport3D x:Name="Viewport" Grid.Column="0" ZoomExtentsWhenLoaded="True">
+        <hx:HelixViewport3D x:Name="Viewport" ZoomExtentsWhenLoaded="True">
+            <hx:HelixViewport3D.Camera>
+                <PerspectiveCamera Position="10, 10, 10" 
+                           LookDirection="-10, -10, -10" 
+                           UpDirection="0, 0, 1" 
+                           NearPlaneDistance="0.01" 
+                           FarPlaneDistance="1000"/>
+            </hx:HelixViewport3D.Camera>
             <hx:SunLight/>
+            <hx:GridLinesVisual3D Width="100" Length="100" MinorDistance="1" MajorDistance="5" 
+                          Thickness="0.01" Fill="Gray"/>
             <hx:GridLinesVisual3D Width="100" Length="100" MinorDistance="1" MajorDistance="5"/>
             <hx:CoordinateSystemVisual3D/>
 
