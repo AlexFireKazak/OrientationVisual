@@ -14,14 +14,14 @@
             <hx:GridLinesVisual3D Width="100" Length="100" MinorDistance="1" MajorDistance="5"/>
             <hx:CoordinateSystemVisual3D/>
 
-                <hx:ArrowVisual3D Point1="0,0,0" Point2="0,5,0" Diameter="0.15" Fill="Green" />
-                <hx:TextVisual3D Text="VBAR (+Y)" Position="0,5.5,0" Height="0.4"/>
+                <hx:ArrowVisual3D Point1="0,1,0" Point2="0,5,0" Diameter="0.15" Fill="Green" />
+                <hx:TextVisual3D Text="GO TO (+Y)" Position="0,5.5,0" Height="0.4"/>
 
-                <hx:ArrowVisual3D Point1="0,0,0" Point2="0,0,5" Diameter="0.15" Fill="Blue" />
-                <hx:TextVisual3D Text="NADIR (+Z)" Position="0,0,5.5"  Height="0.4"/>
+                <hx:ArrowVisual3D Point1="0,0,1" Point2="0,0,5" Diameter="0.15" Fill="Blue" />
+                <hx:TextVisual3D Text="UP (+Z)" Position="0,0,5.5"  Height="0.4"/>
 
-                <hx:ArrowVisual3D Point1="0,0,0" Point2="5,0,0" Diameter="0.15" Fill="Red" />
-                <hx:TextVisual3D Text="RIGHT (+X)" Position="5.5,0,0" Height="0.4"/>
+                <hx:ArrowVisual3D Point1="1,0,0" Point2="5,0,0" Diameter="0.15" Fill="Red" />
+                <hx:TextVisual3D Text="+X" Position="5.5,0,0" Height="0.4"/>
         
 
             <ModelVisual3D x:Name="SatelliteContainer">
