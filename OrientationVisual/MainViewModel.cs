@@ -24,6 +24,8 @@ public partial class MainViewModel : ObservableObject
     private void LoadModel()
     {
         // Здесь будет логика загрузки NS1_v4.obj через Helix ModelImporter
+        var importer = new HelixToolkit.Wpf.ModelImporter();
+        Model3D model = importer.Load("NS1_v4.obj");
     }
 
     partial void OnRollChanged(float value) => SyncFromEuler();
