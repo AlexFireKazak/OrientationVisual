@@ -2,7 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:hx="http://helix-toolkit.org/wpf"
-        Title="Satellite Orientation" Height="600" Width="1000">
+        Title="Satellite Orientation" Height="980" Width="1000">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="2*"/>
@@ -19,19 +19,24 @@
             </hx:HelixViewport3D.Camera>
             <hx:SunLight/>
             <hx:GridLinesVisual3D Width="100" Length="100" MinorDistance="1" MajorDistance="5" 
-                          Thickness="0.01" Fill="Gray"/>
+                           Thickness="0.01" Fill="Gray"/>
             <hx:GridLinesVisual3D Width="100" Length="100" MinorDistance="1" MajorDistance="5"/>
             <hx:CoordinateSystemVisual3D/>
 
-                <hx:ArrowVisual3D Point1="0,1,0" Point2="0,5,0" Diameter="0.15" Fill="Green" />
-                <hx:TextVisual3D Text="GO TO (+Y)" Position="0,5.5,0" Height="0.4"/>
+            <hx:ArrowVisual3D Point1="0,1,0" Point2="0,5,0" Diameter="0.15" Fill="Green" />
+            <hx:TextVisual3D Text="GO TO (+Y)" Position="0,5.5,0" Height="0.4"/>
 
-                <hx:ArrowVisual3D Point1="0,0,1" Point2="0,0,5" Diameter="0.15" Fill="Blue" />
-                <hx:TextVisual3D Text="UP (+Z)" Position="0,0,5.5"  Height="0.4"/>
+            <hx:ArrowVisual3D Point1="0,0,1" Point2="0,0,5" Diameter="0.15" Fill="Blue" />
+            <hx:TextVisual3D Text="UP (+Z)" Position="0,0,5.5"  Height="0.4"/>
 
-                <hx:ArrowVisual3D Point1="1,0,0" Point2="5,0,0" Diameter="0.15" Fill="Red" />
-                <hx:TextVisual3D Text="+X" Position="5.5,0,0" Height="0.4"/>
-        
+            <hx:ArrowVisual3D Point1="1,0,0" Point2="5,0,0" Diameter="0.15" Fill="Red" />
+            <hx:TextVisual3D Text="+X" Position="5.5,0,0" Height="0.4"/>
+
+            <hx:ArrowVisual3D Point1="0,0,0" Point2="{Binding AltTargetPoint}" Diameter="0.2" Fill="Orange" />
+
+            <hx:TranslateManipulator Position="{Binding AltTargetPoint, Mode=TwoWay}" Direction="1,0,0" Length="1.5" Diameter="0.15" Color="Red"/>
+            <hx:TranslateManipulator Position="{Binding AltTargetPoint, Mode=TwoWay}" Direction="0,1,0" Length="1.5" Diameter="0.15" Color="Green"/>
+            <hx:TranslateManipulator Position="{Binding AltTargetPoint, Mode=TwoWay}" Direction="0,0,1" Length="1.5" Diameter="0.15" Color="Blue"/>
 
             <ModelVisual3D x:Name="SatelliteContainer">
                 <ModelVisual3D.Transform>
@@ -40,49 +45,112 @@
             </ModelVisual3D>
         </hx:HelixViewport3D>
 
-        <StackPanel Grid.Column="1" Background="#F5F5F5">
-            <TextBlock Text="Углы Эйлера (3-2-1 ZYX)" FontSize="14" FontWeight="Bold" Margin="0,0,0,10"/>
+        <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel Background="#F5F5F5" Margin="5">
+                <TextBlock Text="Углы Эйлера (3-2-1 ZYX)" FontSize="14" FontWeight="Bold" Margin="0,0,0,10"/>
 
-            <TextBlock Text="Roll (Φ) - Ось X" Margin="0,5,0,0"/>
-            <Slider Value="{Binding Roll}" Minimum="-180" Maximum="180" TickFrequency="1" IsSnapToTickEnabled="False"/>
-            <TextBox Text="{Binding Roll, StringFormat=F5, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,10"/>
+                <TextBlock Text="Roll (Φ) - Axis X" Margin="0,5,0,0"/>
+                <Slider Value="{Binding Roll}" Minimum="-180" Maximum="180" TickFrequency="1" IsSnapToTickEnabled="False"/>
+                <TextBox Text="{Binding Roll, StringFormat=F5, UpdateSourceTrigger=PropertyChanged, ConverterCulture=''}" Margin="0,0,0,10"/>
 
-            <TextBlock Text="Pitch (θ) - Ось Y"/>
-            <Slider Value="{Binding Pitch}" Minimum="-90" Maximum="90" TickFrequency="1"/>
-            <TextBox Text="{Binding Pitch, StringFormat=F5, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,10"/>
+                <TextBlock Text="Pitch (θ) - Axis Y"/>
+                <Slider Value="{Binding Pitch}" Minimum="-90" Maximum="90" TickFrequency="1"/>
+                <TextBox Text="{Binding Pitch, StringFormat=F5, UpdateSourceTrigger=PropertyChanged, ConverterCulture=''}" Margin="0,0,0,10"/>
 
-            <TextBlock Text="Yaw (ψ) - Ось Z"/>
-            <Slider Value="{Binding Yaw}" Minimum="-180" Maximum="180" TickFrequency="1"/>
-            <TextBox Text="{Binding Yaw, StringFormat=F5, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,15"/>
+                <TextBlock Text="Yaw (ψ) - Axis Z"/>
+                <Slider Value="{Binding Yaw}" Minimum="-180" Maximum="180" TickFrequency="1"/>
+                <TextBox Text="{Binding Yaw, StringFormat=F5, UpdateSourceTrigger=PropertyChanged, ConverterCulture=''}" Margin="0,0,0,15"/>
 
-            <Separator Height="2" Margin="0,0,0,15"/>
+                <Separator Height="2" Margin="0,0,0,15"/>
 
-            <TextBlock Text="Кватернион (W, X, Y, Z)" FontSize="14" FontWeight="Bold" Margin="0,0,0,10"/>
-            <UniformGrid Columns="2" Rows="2">
-                <StackPanel Margin="2">
-                    <TextBlock Text="Qw" FontSize="10"/>
-                    <TextBox Text="{Binding QW, UpdateSourceTrigger=LostFocus}"/>
-                </StackPanel>
-                <StackPanel Margin="2">
-                    <TextBlock Text="Qx" FontSize="10"/>
-                    <TextBox Text="{Binding QX, UpdateSourceTrigger=LostFocus}"/>
-                </StackPanel>
-                <StackPanel Margin="2">
-                    <TextBlock Text="Qy" FontSize="10"/>
-                    <TextBox Text="{Binding QY, UpdateSourceTrigger=LostFocus}"/>
-                </StackPanel>
-                <StackPanel Margin="2">
-                    <TextBlock Text="Qz" FontSize="10"/>
-                    <TextBox Text="{Binding QZ, UpdateSourceTrigger=LostFocus}"/>
-                </StackPanel>
-            </UniformGrid>
+                <TextBlock Text="Кватернион (W, X, Y, Z)" FontSize="14" FontWeight="Bold" Margin="0,0,0,10"/>
+                <UniformGrid Columns="2" Rows="2">
+                    <StackPanel Margin="2">
+                        <TextBlock Text="Qw" FontSize="10"/>
+                        <TextBox Text="{Binding QW, UpdateSourceTrigger=LostFocus}"/>
+                    </StackPanel>
+                    <StackPanel Margin="2">
+                        <TextBlock Text="Qx" FontSize="10"/>
+                        <TextBox Text="{Binding QX, UpdateSourceTrigger=LostFocus}"/>
+                    </StackPanel>
+                    <StackPanel Margin="2">
+                        <TextBlock Text="Qy" FontSize="10"/>
+                        <TextBox Text="{Binding QY, UpdateSourceTrigger=LostFocus}"/>
+                    </StackPanel>
+                    <StackPanel Margin="2">
+                        <TextBlock Text="Qz" FontSize="10"/>
+                        <TextBox Text="{Binding QZ, UpdateSourceTrigger=LostFocus}"/>
+                    </StackPanel>
+                </UniformGrid>
 
-            <Button Content="Применить Кватернион" 
-            Command="{Binding ApplyQuaternionCommand}" 
-            Margin="0,15,0,5" Height="30" Cursor="Hand"/>
+                <Button Content="Применить Кватернион" 
+                Command="{Binding ApplyQuaternionCommand}" 
+                Margin="0,15,0,5" Height="30" Cursor="Hand"/>
 
-            <TextBlock Text="{Binding Magnitude, StringFormat='Модуль (Norm): {0:F6}'}" 
-               HorizontalAlignment="Center" Foreground="#666666"/>
-        </StackPanel>
+                <TextBlock Text="{Binding Magnitude, StringFormat='Модуль (Norm): {0:F6}'}" 
+                   HorizontalAlignment="Center" Foreground="#666666" Margin="0,0,0,10"/>
+
+                <Separator Height="2" Margin="0,0,0,15"/>
+
+                <TextBlock Text="Проекции оси (Вращение объекта)" FontSize="12" FontWeight="Bold" Margin="0,0,0,5"/>
+                <UniformGrid Columns="3" Rows="1" Margin="0,0,0,15">
+                    <StackPanel Margin="2">
+                        <TextBlock Text="X" FontSize="10"/>
+                        <TextBox Text="{Binding VisX}" IsReadOnly="True" Background="#EAEAEA"/>
+                    </StackPanel>
+                    <StackPanel Margin="2">
+                        <TextBlock Text="Y" FontSize="10"/>
+                        <TextBox Text="{Binding VisY}" IsReadOnly="True" Background="#EAEAEA"/>
+                    </StackPanel>
+                    <StackPanel Margin="2">
+                        <TextBlock Text="Z" FontSize="10"/>
+                        <TextBox Text="{Binding VisZ}" IsReadOnly="True" Background="#EAEAEA"/>
+                    </StackPanel>
+                </UniformGrid>
+
+                <Separator Height="2" Margin="0,0,0,15"/>
+
+                <TextBlock Text="Задать целевой вектор визирования" FontSize="14" FontWeight="Bold" Margin="0,0,0,10"/>
+                <UniformGrid Columns="3" Rows="1" Margin="0,0,0,10">
+                    <StackPanel Margin="2">
+                        <TextBlock Text="Target X" FontSize="10"/>
+                        <TextBox Text="{Binding InputVisX, UpdateSourceTrigger=LostFocus}"/>
+                    </StackPanel>
+                    <StackPanel Margin="2">
+                        <TextBlock Text="Target Y" FontSize="10"/>
+                        <TextBox Text="{Binding InputVisY, UpdateSourceTrigger=LostFocus}"/>
+                    </StackPanel>
+                    <StackPanel Margin="2">
+                        <TextBlock Text="Target Z" FontSize="10"/>
+                        <TextBox Text="{Binding InputVisZ, UpdateSourceTrigger=LostFocus}"/>
+                    </StackPanel>
+                </UniformGrid>
+
+                <Button Content="Определить положение аппарата" 
+                Command="{Binding ApplySightVectorCommand}" 
+                Margin="0,0,0,15" Height="30" Cursor="Hand"/>
+
+                <Separator Height="2" Margin="0,0,0,15"/>
+
+                <TextBlock Text="Interactive Vector (Mouse / Input)" FontSize="14" FontWeight="Bold" Margin="0,0,0,10"/>
+                <TextBlock Text="Мировые проекции вектора:" FontSize="11" Margin="2,0,0,5" Foreground="#333333"/>
+                <UniformGrid Columns="3" Rows="1">
+                    <StackPanel Margin="2">
+                        <TextBlock Text="Мировой X" FontSize="10"/>
+                        <TextBox Text="{Binding AltWorldX, UpdateSourceTrigger=LostFocus}"/>
+                    </StackPanel>
+                    <StackPanel Margin="2">
+                        <TextBlock Text="Мировой Y" FontSize="10"/>
+                        <TextBox Text="{Binding AltWorldY, UpdateSourceTrigger=LostFocus}"/>
+                    </StackPanel>
+                    <StackPanel Margin="2">
+                        <TextBlock Text="Мировой Z" FontSize="10"/>
+                        <TextBox Text="{Binding AltWorldZ, UpdateSourceTrigger=LostFocus}"/>
+                    </StackPanel>
+                </UniformGrid>
+                <TextBlock Text="*Можно перетаскивать вектор цветными стрелочками в сцене или вводить точные проекции руками (изменения применятся после нажатия Enter или смены фокуса)." 
+                           FontSize="9" Foreground="#666666" Margin="2,10,2,0" TextWrapping="Wrap"/>
+            </StackPanel>
+        </ScrollViewer>
     </Grid>
 </Window>
