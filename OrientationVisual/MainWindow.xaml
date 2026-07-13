@@ -51,15 +51,15 @@
 
                 <TextBlock Text="Roll (Φ) - Axis X" Margin="0,5,0,0"/>
                 <Slider Value="{Binding Roll}" Minimum="-180" Maximum="180" TickFrequency="1" IsSnapToTickEnabled="False"/>
-                <TextBox Text="{Binding Roll, StringFormat=F5, UpdateSourceTrigger=PropertyChanged, ConverterCulture=''}" Margin="0,0,0,10"/>
+                <TextBox Text="{Binding Roll, StringFormat=F5, UpdateSourceTrigger=PropertyChanged, ConverterCulture='en-US'}" Margin="0,0,0,10"/>
 
                 <TextBlock Text="Pitch (θ) - Axis Y"/>
                 <Slider Value="{Binding Pitch}" Minimum="-90" Maximum="90" TickFrequency="1"/>
-                <TextBox Text="{Binding Pitch, StringFormat=F5, UpdateSourceTrigger=PropertyChanged, ConverterCulture=''}" Margin="0,0,0,10"/>
+                <TextBox Text="{Binding Pitch, StringFormat=F5, UpdateSourceTrigger=PropertyChanged, ConverterCulture='en-US'}" Margin="0,0,0,10"/>
 
                 <TextBlock Text="Yaw (ψ) - Axis Z"/>
                 <Slider Value="{Binding Yaw}" Minimum="-180" Maximum="180" TickFrequency="1"/>
-                <TextBox Text="{Binding Yaw, StringFormat=F5, UpdateSourceTrigger=PropertyChanged, ConverterCulture=''}" Margin="0,0,0,15"/>
+                <TextBox Text="{Binding Yaw, StringFormat=F5, UpdateSourceTrigger=PropertyChanged, ConverterCulture='en-US'}" Margin="0,0,0,15"/>
 
                 <Separator Height="2" Margin="0,0,0,15"/>
 

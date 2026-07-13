@@ -94,16 +94,10 @@ public partial class MainViewModel : ObservableObject
 
     public MainViewModel()
     {
-        LoadModel();
         UpdateInteractiveVectorProjections(AltTargetPoint);
     }
 
-    private void LoadModel()
-    {
-        var importer = new HelixToolkit.Wpf.ModelImporter();
-        Model3D model = importer.Load("NS1_v4.obj");
-    }
-
+    
     partial void OnRollChanged(float value) => SyncFromEuler();
     partial void OnPitchChanged(float value) => SyncFromEuler();
     partial void OnYawChanged(float value) => SyncFromEuler();
