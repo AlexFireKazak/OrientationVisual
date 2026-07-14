@@ -11,7 +11,7 @@ public static class KinematicsMath
     public static Quaternion EulerToQuaternion(float yaw, float pitch, float roll)
     {
         float y = yaw * Deg2Rad;
-        float p = -pitch * Deg2Rad; // Инверсия знака Pitch здесь
+        float p = pitch * Deg2Rad; // Инверсия знака Pitch здесь
         float r = roll * Deg2Rad;
 
         // Вращения вокруг мировых осей в правой системе координат
@@ -20,7 +20,7 @@ public static class KinematicsMath
         Quaternion qRoll = Quaternion.CreateFromAxisAngle(new Vector3(0, 1, 0), r);
 
         // Результирующий кватернион: Z * X * Y
-        return qYaw * qPitch * qRoll;
+        return qRoll * qPitch * qYaw; 
     }
 
     public static (float yaw, float pitch, float roll) QuaternionToEuler(Quaternion q)
@@ -46,6 +46,6 @@ public static class KinematicsMath
         float yaw = (float)Math.Atan2(sinY_cosP, cosy_cosp);
 
         // Возвращаем Pitch с обратным знаком, чтобы UI и математика были синхронны
-        return (yaw * Rad2Deg, -pitch * Rad2Deg, roll * Rad2Deg);
+        return (yaw * Rad2Deg, pitch * Rad2Deg, roll * Rad2Deg);
     }
 }
