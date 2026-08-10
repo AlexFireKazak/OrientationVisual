@@ -23,6 +23,7 @@
             <hx:GridLinesVisual3D Width="100" Length="100" MinorDistance="1" MajorDistance="5"/>
             <hx:CoordinateSystemVisual3D/>
 
+            <!-- Мировые ося координат -->
             <hx:ArrowVisual3D Point1="0,1,0" Point2="0,5,0" Diameter="0.15" Fill="Green" />
             <hx:TextVisual3D Text="GO TO (+Y)" Position="0,5.5,0" Height="0.4"/>
 
@@ -32,16 +33,23 @@
             <hx:ArrowVisual3D Point1="1,0,0" Point2="5,0,0" Diameter="0.15" Fill="Red" />
             <hx:TextVisual3D Text="+X" Position="5.5,0,0" Height="0.4"/>
 
+            <!-- Внешний интерактивный манипулятор -->
             <hx:ArrowVisual3D Point1="0,0,0" Point2="{Binding AltTargetPoint}" Diameter="0.2" Fill="Orange" />
-
             <hx:TranslateManipulator Position="{Binding AltTargetPoint, Mode=TwoWay}" Direction="1,0,0" Length="1.5" Diameter="0.15" Color="Red"/>
             <hx:TranslateManipulator Position="{Binding AltTargetPoint, Mode=TwoWay}" Direction="0,1,0" Length="1.5" Diameter="0.15" Color="Green"/>
             <hx:TranslateManipulator Position="{Binding AltTargetPoint, Mode=TwoWay}" Direction="0,0,1" Length="1.5" Diameter="0.15" Color="Blue"/>
 
+            <!-- Контейнер аппарата: вращается через SatelliteRotation -->
             <ModelVisual3D x:Name="SatelliteContainer">
                 <ModelVisual3D.Transform>
                     <RotateTransform3D Rotation="{Binding SatelliteRotation}"/>
                 </ModelVisual3D.Transform>
+
+                <!-- Вложенная ось визирования: жестко привязана к строительным осям аппарата -->
+                <hx:ArrowVisual3D Point1="{Binding SightPoint1}" 
+                                  Point2="{Binding SightPoint2}" 
+                                  Diameter="0.1" 
+                                  Fill="Cyan" />
             </ModelVisual3D>
         </hx:HelixViewport3D>
 
@@ -84,11 +92,30 @@
                 </UniformGrid>
 
                 <Button Content="Применить Кватернион" 
-                Command="{Binding ApplyQuaternionCommand}" 
-                Margin="0,15,0,5" Height="30" Cursor="Hand"/>
+                        Command="{Binding ApplyQuaternionCommand}" 
+                        Margin="0,15,0,5" Height="30" Cursor="Hand"/>
 
                 <TextBlock Text="{Binding Magnitude, StringFormat='Модуль (Norm): {0:F6}'}" 
-                   HorizontalAlignment="Center" Foreground="#666666" Margin="0,0,0,10"/>
+                           HorizontalAlignment="Center" Foreground="#666666" Margin="0,0,0,10"/>
+
+                <Separator Height="2" Margin="0,0,0,15"/>
+
+                <!-- Блок настройки жестко привязанной оси визирования -->
+                <TextBlock Text="Локальная ось визирования (Связанная ССК)" FontSize="14" FontWeight="Bold" Margin="0,0,0,10"/>
+                <UniformGrid Columns="3" Rows="1" Margin="0,0,0,10">
+                    <StackPanel Margin="2">
+                        <TextBlock Text="Локальный X" FontSize="10"/>
+                        <TextBox Text="{Binding AltLocalX, UpdateSourceTrigger=PropertyChanged}"/>
+                    </StackPanel>
+                    <StackPanel Margin="2">
+                        <TextBlock Text="Локальный Y" FontSize="10"/>
+                        <TextBox Text="{Binding AltLocalY, UpdateSourceTrigger=PropertyChanged}"/>
+                    </StackPanel>
+                    <StackPanel Margin="2">
+                        <TextBlock Text="Локальный Z" FontSize="10"/>
+                        <TextBox Text="{Binding AltLocalZ, UpdateSourceTrigger=PropertyChanged}"/>
+                    </StackPanel>
+                </UniformGrid>
 
                 <Separator Height="2" Margin="0,0,0,15"/>
 
@@ -127,8 +154,8 @@
                 </UniformGrid>
 
                 <Button Content="Определить положение аппарата" 
-                Command="{Binding ApplySightVectorCommand}" 
-                Margin="0,0,0,15" Height="30" Cursor="Hand"/>
+                        Command="{Binding ApplySightVectorCommand}" 
+                        Margin="0,0,0,15" Height="30" Cursor="Hand"/>
 
                 <Separator Height="2" Margin="0,0,0,15"/>
 
@@ -148,8 +175,6 @@
                         <TextBox Text="{Binding AltWorldZ, UpdateSourceTrigger=LostFocus}"/>
                     </StackPanel>
                 </UniformGrid>
-                <TextBlock Text="*Можно перетаскивать вектор цветными стрелочками в сцене или вводить точные проекции руками (изменения применятся после нажатия Enter или смены фокуса)." 
-                           FontSize="9" Foreground="#666666" Margin="2,10,2,0" TextWrapping="Wrap"/>
             </StackPanel>
         </ScrollViewer>
     </Grid>

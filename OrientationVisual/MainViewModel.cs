@@ -30,10 +30,15 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty] private string _inputVisY = "0.00000";
     [ObservableProperty] private string _inputVisZ = "-1.00000";
 
-    // АЛЬТЕРНАТИВНАЯ ОСЬ: Локальные координаты
+    // АЛЬТЕРНАТИВНАЯ (ЛОКАЛЬНАЯ) ОСЬ ВИЗИРОВАНИЯ: Локальные координаты на аппарате
     [ObservableProperty] private string _altLocalX = "0.00000";
     [ObservableProperty] private string _altLocalY = "0.00000";
     [ObservableProperty] private string _altLocalZ = "-1.00000";
+
+    // Локальные точки 3D-стрелки визирования, жестко привязанной к модели
+    [ObservableProperty] private Point3D _sightPoint1 = new Point3D(0, 0, 0);
+    [ObservableProperty] private Point3D _sightPoint2 = new Point3D(0, 0, -3);
+    private const double SightLength = 3.0; // Длина отображаемой стрелки
 
     // ИНТЕРАКТИВНЫЙ ВЕКТОР: Положение кончика стрелки в пространстве
     private Point3D _altTargetPoint = new Point3D(0, 0, -4);
@@ -95,12 +100,31 @@ public partial class MainViewModel : ObservableObject
     public MainViewModel()
     {
         UpdateInteractiveVectorProjections(AltTargetPoint);
+        UpdateLocalSightArrow();
     }
 
-    
     partial void OnRollChanged(float value) => SyncFromEuler();
     partial void OnPitchChanged(float value) => SyncFromEuler();
     partial void OnYawChanged(float value) => SyncFromEuler();
+
+    // Явные подписки на изменение полей ввода локальной оси визирования
+    partial void OnAltLocalXChanged(string value)
+    {
+        UpdateLocalSightArrow();
+        RecalculateCurrentProjections();
+    }
+
+    partial void OnAltLocalYChanged(string value)
+    {
+        UpdateLocalSightArrow();
+        RecalculateCurrentProjections();
+    }
+
+    partial void OnAltLocalZChanged(string value)
+    {
+        UpdateLocalSightArrow();
+        RecalculateCurrentProjections();
+    }
 
     // Обновление текстовых полей при перемещении вектора МЫШЬЮ
     private void UpdateInteractiveVectorProjections(Point3D point)
@@ -146,15 +170,37 @@ public partial class MainViewModel : ObservableObject
         }
     }
 
-    partial void OnAltLocalXChanged(string value) => RecalculateCurrentProjections();
-    partial void OnAltLocalYChanged(string value) => RecalculateCurrentProjections();
-    partial void OnAltLocalZChanged(string value) => RecalculateCurrentProjections();
-
     private void RecalculateCurrentProjections()
     {
         if (_isSyncing) return;
         NumQ q = KinematicsMath.EulerToQuaternion(Yaw, Pitch, Roll);
         UpdateSightAxisProjections(q);
+    }
+
+    // Обновление локальной стрелки визирования, жестко связанной со спутником
+    private void UpdateLocalSightArrow()
+    {
+        string xStr = string.IsNullOrWhiteSpace(AltLocalX) ? "0" : AltLocalX.Replace(',', '.');
+        string yStr = string.IsNullOrWhiteSpace(AltLocalY) ? "0" : AltLocalY.Replace(',', '.');
+        string zStr = string.IsNullOrWhiteSpace(AltLocalZ) ? "0" : AltLocalZ.Replace(',', '.');
+
+        if (double.TryParse(xStr, NumberStyles.Float, CultureInfo.InvariantCulture, out var x) &&
+            double.TryParse(yStr, NumberStyles.Float, CultureInfo.InvariantCulture, out var y) &&
+            double.TryParse(zStr, NumberStyles.Float, CultureInfo.InvariantCulture, out var z))
+        {
+            Vector3D dir = new Vector3D(x, y, z);
+            if (dir.Length > 0)
+            {
+                dir.Normalize();
+            }
+            else
+            {
+                dir = new Vector3D(0, 0, -1);
+            }
+
+            SightPoint1 = new Point3D(0, 0, 0);
+            SightPoint2 = new Point3D(dir.X * SightLength, dir.Y * SightLength, dir.Z * SightLength);
+        }
     }
 
     private void SyncFromEuler()
