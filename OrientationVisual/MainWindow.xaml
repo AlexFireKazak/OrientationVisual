@@ -39,13 +39,13 @@
 
             <!-- Внешний интерактивный манипулятор -->
             <hx:ArrowVisual3D Point1="0,0,0" Point2="{Binding AltTargetPoint}" Diameter="0.2" Fill="Orange" 
-                  Visible="{Binding IsInteractiveVectorVisible}"/>
+                              Visible="{Binding IsInteractiveVectorVisible}"/>
             <hx:TranslateManipulator Position="{Binding AltTargetPoint, Mode=TwoWay}" Direction="1,0,0" Length="1.5" Diameter="0.15" Color="Red" 
-                         Visibility="{Binding IsInteractiveVectorVisible, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                     Visibility="{Binding IsInteractiveVectorVisible, Converter={StaticResource BooleanToVisibilityConverter}}"/>
             <hx:TranslateManipulator Position="{Binding AltTargetPoint, Mode=TwoWay}" Direction="0,1,0" Length="1.5" Diameter="0.15" Color="Green" 
-                         Visibility="{Binding IsInteractiveVectorVisible, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                     Visibility="{Binding IsInteractiveVectorVisible, Converter={StaticResource BooleanToVisibilityConverter}}"/>
             <hx:TranslateManipulator Position="{Binding AltTargetPoint, Mode=TwoWay}" Direction="0,0,1" Length="1.5" Diameter="0.15" Color="Blue" 
-                         Visibility="{Binding IsInteractiveVectorVisible, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                     Visibility="{Binding IsInteractiveVectorVisible, Converter={StaticResource BooleanToVisibilityConverter}}"/>
 
             <!-- Контейнер аппарата: вращается через SatelliteRotation -->
             <ModelVisual3D x:Name="SatelliteContainer">
@@ -108,22 +108,26 @@
 
                 <Separator Height="2" Margin="0,0,0,15"/>
 
-                <!-- Блок настройки жестко привязанной оси визирования (нормировка по LostFocus) -->
+                <!-- Блок настройки жестко привязанной оси визирования (применение по кнопке) -->
                 <TextBlock Text="Локальная ось визирования (Связанная ССК)" FontSize="14" FontWeight="Bold" Margin="0,0,0,10"/>
-                <UniformGrid Columns="3" Rows="1" Margin="0,0,0,10">
+                <UniformGrid Columns="3" Rows="1" Margin="0,0,0,5">
                     <StackPanel Margin="2">
                         <TextBlock Text="Локальный X" FontSize="10"/>
-                        <TextBox Text="{Binding AltLocalX, UpdateSourceTrigger=LostFocus}"/>
+                        <TextBox Text="{Binding AltLocalX}"/>
                     </StackPanel>
                     <StackPanel Margin="2">
                         <TextBlock Text="Локальный Y" FontSize="10"/>
-                        <TextBox Text="{Binding AltLocalY, UpdateSourceTrigger=LostFocus}"/>
+                        <TextBox Text="{Binding AltLocalY}"/>
                     </StackPanel>
                     <StackPanel Margin="2">
                         <TextBlock Text="Локальный Z" FontSize="10"/>
-                        <TextBox Text="{Binding AltLocalZ, UpdateSourceTrigger=LostFocus}"/>
+                        <TextBox Text="{Binding AltLocalZ}"/>
                     </StackPanel>
                 </UniformGrid>
+
+                <Button Content="Принять" 
+                        Command="{Binding ApplyLocalSightVectorCommand}" 
+                        Margin="0,0,0,15" Height="30" Cursor="Hand"/>
 
                 <Separator Height="2" Margin="0,0,0,15"/>
 

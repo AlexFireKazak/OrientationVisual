@@ -99,30 +99,16 @@ public partial class MainViewModel : ObservableObject
 
     private bool _isSyncing = false;
     private bool _isAltSyncing = false; // Флаг защиты от зацикливания интерактивного вектора
-    private bool _isLocalSightSyncing = false; // Флаг защиты от рекурсии при нормировке локального вектора
 
     public MainViewModel()
     {
         UpdateInteractiveVectorProjections(AltTargetPoint);
-        UpdateLocalSightArrow();
+        ApplyLocalSightVector();
     }
 
     partial void OnRollChanged(float value) => SyncFromEuler();
     partial void OnPitchChanged(float value) => SyncFromEuler();
     partial void OnYawChanged(float value) => SyncFromEuler();
-
-    // Обработчики изменения полей ввода локальной оси визирования
-    partial void OnAltLocalXChanged(string value) => ProcessLocalSightVector();
-    partial void OnAltLocalYChanged(string value) => ProcessLocalSightVector();
-    partial void OnAltLocalZChanged(string value) => ProcessLocalSightVector();
-
-    private void ProcessLocalSightVector()
-    {
-        if (_isLocalSightSyncing) return;
-
-        UpdateLocalSightArrow();
-        RecalculateCurrentProjections();
-    }
 
     // Обновление текстовых полей при перемещении вектора МЫШЬЮ
     private void UpdateInteractiveVectorProjections(Point3D point)
@@ -175,8 +161,9 @@ public partial class MainViewModel : ObservableObject
         UpdateSightAxisProjections(q);
     }
 
-    // Обновление и автоматическая нормировка локальной стрелки визирования
-    private void UpdateLocalSightArrow()
+    // Применение и явная нормировка локальной оси визирования по кнопке
+    [RelayCommand]
+    private void ApplyLocalSightVector()
     {
         string xStr = string.IsNullOrWhiteSpace(AltLocalX) ? "0" : AltLocalX.Replace(',', '.');
         string yStr = string.IsNullOrWhiteSpace(AltLocalY) ? "0" : AltLocalY.Replace(',', '.');
@@ -191,19 +178,22 @@ public partial class MainViewModel : ObservableObject
             {
                 dir.Normalize();
 
-                _isLocalSightSyncing = true;
                 AltLocalX = dir.X.ToString("F5", CultureInfo.InvariantCulture);
                 AltLocalY = dir.Y.ToString("F5", CultureInfo.InvariantCulture);
                 AltLocalZ = dir.Z.ToString("F5", CultureInfo.InvariantCulture);
-                _isLocalSightSyncing = false;
             }
             else
             {
                 dir = new Vector3D(0, 0, -1);
+                AltLocalX = "0.00000";
+                AltLocalY = "0.00000";
+                AltLocalZ = "-1.00000";
             }
 
             SightPoint1 = new Point3D(0, 0, 0);
             SightPoint2 = new Point3D(dir.X * SightLength, dir.Y * SightLength, dir.Z * SightLength);
+
+            RecalculateCurrentProjections();
         }
     }
 
