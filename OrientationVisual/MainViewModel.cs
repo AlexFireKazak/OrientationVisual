@@ -102,6 +102,11 @@ public partial class MainViewModel : ObservableObject
 
     public MainViewModel()
     {
+        // Загрузка сохраненных значений при запуске программы
+        AltLocalX = OrientationVisual.Properties.Settings.Default.SavedLocalX;
+        AltLocalY = OrientationVisual.Properties.Settings.Default.SavedLocalY;
+        AltLocalZ = OrientationVisual.Properties.Settings.Default.SavedLocalZ;
+
         UpdateInteractiveVectorProjections(AltTargetPoint);
         ApplyLocalSightVector();
     }
@@ -161,7 +166,7 @@ public partial class MainViewModel : ObservableObject
         UpdateSightAxisProjections(q);
     }
 
-    // Применение и явная нормировка локальной оси визирования по кнопке
+    // Применение, явная нормировка и сохранение локальной оси визирования по кнопке
     [RelayCommand]
     private void ApplyLocalSightVector()
     {
@@ -192,6 +197,12 @@ public partial class MainViewModel : ObservableObject
 
             SightPoint1 = new Point3D(0, 0, 0);
             SightPoint2 = new Point3D(dir.X * SightLength, dir.Y * SightLength, dir.Z * SightLength);
+
+            // Сохранение значений вектора визирования
+            OrientationVisual.Properties.Settings.Default.SavedLocalX = AltLocalX;
+            OrientationVisual.Properties.Settings.Default.SavedLocalY = AltLocalY;
+            OrientationVisual.Properties.Settings.Default.SavedLocalZ = AltLocalZ;
+            OrientationVisual.Properties.Settings.Default.Save();
 
             RecalculateCurrentProjections();
         }
