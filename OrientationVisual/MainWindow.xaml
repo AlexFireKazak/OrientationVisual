@@ -3,6 +3,10 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:hx="http://helix-toolkit.org/wpf"
         Title="Satellite Orientation" Height="980" Width="1000">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+    </Window.Resources>
+
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="2*"/>
@@ -23,7 +27,7 @@
             <hx:GridLinesVisual3D Width="100" Length="100" MinorDistance="1" MajorDistance="5"/>
             <hx:CoordinateSystemVisual3D/>
 
-            <!-- Мировые ося координат -->
+            <!-- Мировые оси координат -->
             <hx:ArrowVisual3D Point1="0,1,0" Point2="0,5,0" Diameter="0.15" Fill="Green" />
             <hx:TextVisual3D Text="GO TO (+Y)" Position="0,5.5,0" Height="0.4"/>
 
@@ -34,10 +38,14 @@
             <hx:TextVisual3D Text="+X" Position="5.5,0,0" Height="0.4"/>
 
             <!-- Внешний интерактивный манипулятор -->
-            <hx:ArrowVisual3D Point1="0,0,0" Point2="{Binding AltTargetPoint}" Diameter="0.2" Fill="Orange" />
-            <hx:TranslateManipulator Position="{Binding AltTargetPoint, Mode=TwoWay}" Direction="1,0,0" Length="1.5" Diameter="0.15" Color="Red"/>
-            <hx:TranslateManipulator Position="{Binding AltTargetPoint, Mode=TwoWay}" Direction="0,1,0" Length="1.5" Diameter="0.15" Color="Green"/>
-            <hx:TranslateManipulator Position="{Binding AltTargetPoint, Mode=TwoWay}" Direction="0,0,1" Length="1.5" Diameter="0.15" Color="Blue"/>
+            <hx:ArrowVisual3D Point1="0,0,0" Point2="{Binding AltTargetPoint}" Diameter="0.2" Fill="Orange" 
+                  Visible="{Binding IsInteractiveVectorVisible}"/>
+            <hx:TranslateManipulator Position="{Binding AltTargetPoint, Mode=TwoWay}" Direction="1,0,0" Length="1.5" Diameter="0.15" Color="Red" 
+                         Visibility="{Binding IsInteractiveVectorVisible, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+            <hx:TranslateManipulator Position="{Binding AltTargetPoint, Mode=TwoWay}" Direction="0,1,0" Length="1.5" Diameter="0.15" Color="Green" 
+                         Visibility="{Binding IsInteractiveVectorVisible, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+            <hx:TranslateManipulator Position="{Binding AltTargetPoint, Mode=TwoWay}" Direction="0,0,1" Length="1.5" Diameter="0.15" Color="Blue" 
+                         Visibility="{Binding IsInteractiveVectorVisible, Converter={StaticResource BooleanToVisibilityConverter}}"/>
 
             <!-- Контейнер аппарата: вращается через SatelliteRotation -->
             <ModelVisual3D x:Name="SatelliteContainer">
@@ -100,20 +108,20 @@
 
                 <Separator Height="2" Margin="0,0,0,15"/>
 
-                <!-- Блок настройки жестко привязанной оси визирования -->
+                <!-- Блок настройки жестко привязанной оси визирования (нормировка по LostFocus) -->
                 <TextBlock Text="Локальная ось визирования (Связанная ССК)" FontSize="14" FontWeight="Bold" Margin="0,0,0,10"/>
                 <UniformGrid Columns="3" Rows="1" Margin="0,0,0,10">
                     <StackPanel Margin="2">
                         <TextBlock Text="Локальный X" FontSize="10"/>
-                        <TextBox Text="{Binding AltLocalX, UpdateSourceTrigger=PropertyChanged}"/>
+                        <TextBox Text="{Binding AltLocalX, UpdateSourceTrigger=LostFocus}"/>
                     </StackPanel>
                     <StackPanel Margin="2">
                         <TextBlock Text="Локальный Y" FontSize="10"/>
-                        <TextBox Text="{Binding AltLocalY, UpdateSourceTrigger=PropertyChanged}"/>
+                        <TextBox Text="{Binding AltLocalY, UpdateSourceTrigger=LostFocus}"/>
                     </StackPanel>
                     <StackPanel Margin="2">
                         <TextBlock Text="Локальный Z" FontSize="10"/>
-                        <TextBox Text="{Binding AltLocalZ, UpdateSourceTrigger=PropertyChanged}"/>
+                        <TextBox Text="{Binding AltLocalZ, UpdateSourceTrigger=LostFocus}"/>
                     </StackPanel>
                 </UniformGrid>
 
@@ -159,22 +167,28 @@
 
                 <Separator Height="2" Margin="0,0,0,15"/>
 
-                <TextBlock Text="Interactive Vector (Mouse / Input)" FontSize="14" FontWeight="Bold" Margin="0,0,0,10"/>
-                <TextBlock Text="Мировые проекции вектора:" FontSize="11" Margin="2,0,0,5" Foreground="#333333"/>
-                <UniformGrid Columns="3" Rows="1">
-                    <StackPanel Margin="2">
-                        <TextBlock Text="Мировой X" FontSize="10"/>
-                        <TextBox Text="{Binding AltWorldX, UpdateSourceTrigger=LostFocus}"/>
-                    </StackPanel>
-                    <StackPanel Margin="2">
-                        <TextBlock Text="Мировой Y" FontSize="10"/>
-                        <TextBox Text="{Binding AltWorldY, UpdateSourceTrigger=LostFocus}"/>
-                    </StackPanel>
-                    <StackPanel Margin="2">
-                        <TextBlock Text="Мировой Z" FontSize="10"/>
-                        <TextBox Text="{Binding AltWorldZ, UpdateSourceTrigger=LostFocus}"/>
-                    </StackPanel>
-                </UniformGrid>
+                <!-- Управление интерактивным вектором с чекбоксом -->
+                <CheckBox Content="Показывать интерактивный вектор" 
+                          IsChecked="{Binding IsInteractiveVectorVisible}" 
+                          FontWeight="Bold" Margin="0,0,0,10"/>
+
+                <StackPanel Visibility="{Binding IsInteractiveVectorVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <TextBlock Text="Мировые проекции вектора:" FontSize="11" Margin="2,0,0,5" Foreground="#333333"/>
+                    <UniformGrid Columns="3" Rows="1">
+                        <StackPanel Margin="2">
+                            <TextBlock Text="Мировой X" FontSize="10"/>
+                            <TextBox Text="{Binding AltWorldX, UpdateSourceTrigger=LostFocus}"/>
+                        </StackPanel>
+                        <StackPanel Margin="2">
+                            <TextBlock Text="Мировой Y" FontSize="10"/>
+                            <TextBox Text="{Binding AltWorldY, UpdateSourceTrigger=LostFocus}"/>
+                        </StackPanel>
+                        <StackPanel Margin="2">
+                            <TextBlock Text="Мировой Z" FontSize="10"/>
+                            <TextBox Text="{Binding AltWorldZ, UpdateSourceTrigger=LostFocus}"/>
+                        </StackPanel>
+                    </UniformGrid>
+                </StackPanel>
             </StackPanel>
         </ScrollViewer>
     </Grid>

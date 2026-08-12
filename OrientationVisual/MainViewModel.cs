@@ -15,6 +15,9 @@ public partial class MainViewModel : ObservableObject
     [ObservableProperty] private double _magnitude = 1.0;
     [ObservableProperty] private QuaternionRotation3D _satelliteRotation = new();
 
+    // Видимость интерактивного вектора (по умолчанию выключен)
+    [ObservableProperty] private bool _isInteractiveVectorVisible = false;
+
     // Основная ось визирования: Прямой расчет
     [ObservableProperty] private string _visX = "0.00000";
     [ObservableProperty] private string _visY = "0.00000";
@@ -96,6 +99,7 @@ public partial class MainViewModel : ObservableObject
 
     private bool _isSyncing = false;
     private bool _isAltSyncing = false; // Флаг защиты от зацикливания интерактивного вектора
+    private bool _isLocalSightSyncing = false; // Флаг защиты от рекурсии при нормировке локального вектора
 
     public MainViewModel()
     {
@@ -107,21 +111,15 @@ public partial class MainViewModel : ObservableObject
     partial void OnPitchChanged(float value) => SyncFromEuler();
     partial void OnYawChanged(float value) => SyncFromEuler();
 
-    // Явные подписки на изменение полей ввода локальной оси визирования
-    partial void OnAltLocalXChanged(string value)
-    {
-        UpdateLocalSightArrow();
-        RecalculateCurrentProjections();
-    }
+    // Обработчики изменения полей ввода локальной оси визирования
+    partial void OnAltLocalXChanged(string value) => ProcessLocalSightVector();
+    partial void OnAltLocalYChanged(string value) => ProcessLocalSightVector();
+    partial void OnAltLocalZChanged(string value) => ProcessLocalSightVector();
 
-    partial void OnAltLocalYChanged(string value)
+    private void ProcessLocalSightVector()
     {
-        UpdateLocalSightArrow();
-        RecalculateCurrentProjections();
-    }
+        if (_isLocalSightSyncing) return;
 
-    partial void OnAltLocalZChanged(string value)
-    {
         UpdateLocalSightArrow();
         RecalculateCurrentProjections();
     }
@@ -177,7 +175,7 @@ public partial class MainViewModel : ObservableObject
         UpdateSightAxisProjections(q);
     }
 
-    // Обновление локальной стрелки визирования, жестко связанной со спутником
+    // Обновление и автоматическая нормировка локальной стрелки визирования
     private void UpdateLocalSightArrow()
     {
         string xStr = string.IsNullOrWhiteSpace(AltLocalX) ? "0" : AltLocalX.Replace(',', '.');
@@ -192,6 +190,12 @@ public partial class MainViewModel : ObservableObject
             if (dir.Length > 0)
             {
                 dir.Normalize();
+
+                _isLocalSightSyncing = true;
+                AltLocalX = dir.X.ToString("F5", CultureInfo.InvariantCulture);
+                AltLocalY = dir.Y.ToString("F5", CultureInfo.InvariantCulture);
+                AltLocalZ = dir.Z.ToString("F5", CultureInfo.InvariantCulture);
+                _isLocalSightSyncing = false;
             }
             else
             {
